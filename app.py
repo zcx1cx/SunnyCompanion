@@ -61,6 +61,14 @@ def get_red_story():
 
 def call_ai(messages):
     """调用豆包API"""
+    # 线上部署：自动从Streamlit后台的Secrets读取密钥（安全）
+    API_KEY = st.secrets.get("API_KEY", "")
+    ENDPOINT_ID = st.secrets.get("ENDPOINT_ID", "")
+    
+    # 【本地测试用】本地跑的时候，把上面两行注释掉，取消下面两行的注释，填你的真实密钥
+    # API_KEY = "你本地测试用的完整API Key"
+    # ENDPOINT_ID = "你本地测试用的ep-开头的端点ID"
+    
     url = "https://ark.cn-beijing.volces.com/api/v3/chat/completions"
     headers = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
     data = {
@@ -69,12 +77,17 @@ def call_ai(messages):
         "temperature": 0.7,
         "max_tokens": 600
     }
+    
+    # 提前检查密钥有没有配置对
+    if not API_KEY or not ENDPOINT_ID:
+        return "哎呀，我的密钥还没配置好，您可以先试试快捷按钮哦～"
+    
     try:
         res = requests.post(url, headers=headers, json=data, timeout=10)
         res.raise_for_status()
         return res.json()["choices"][0]["message"]["content"]
     except Exception as e:
-        return f"哎呀，网络有点小问题，您再试试～(错误: {str(e)[:20]})"
+        return f"哎呀，网络有点小问题，您再试试～(错误: {str(e)[:30]})"
 
 
 # 对话
@@ -151,3 +164,4 @@ if user_input:
 
             st.markdown(f'<p class="chat-text">{reply}</p>', unsafe_allow_html=True)
             st.session_state.msgs.append({"role": "assistant", "content": reply})
+
