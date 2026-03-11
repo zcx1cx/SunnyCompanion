@@ -1,42 +1,30 @@
-# ------------------------------------------------------
-# 【使用说明】
-# 1. 安装依赖库：在PyCharm下方的Terminal里输入：pip install streamlit requests
-# 2. 填入API Key：在下方第25行填入你的豆包API Key
-# 3. 填入Prompt：在下方第30行填入你优化后的养老专属Prompt
-# 4. 运行代码：在Terminal里输入：streamlit run app.py
-# ------------------------------------------------------
-
 # 导入必要的库
-import streamlit as st  # 用于做网页界面的库
-import requests  # 用于调用API的库
-import json  # 用于处理数据格式
+import streamlit as st  # 做网页界面的
+import requests  # 调用API的
+import json  # 处理数据格式
 
-# ------------------------------------------------------
-# ⚠️ 【配置区域】请在此处填入你的信息 ⚠️
-# ------------------------------------------------------
 
-# TODO 1: 把你的豆包 API Key 填在引号里
-API_KEY = "在这里填入你的API_KEY"
+# 填个人信息 
 
-# TODO 2: 把你为养老场景优化的专属 System Prompt 填在这里
-# 示例：你是一个贴心的养老陪伴机器人，名叫暖阳，说话要慢，语气要温柔，像家人一样...
+
+# 方舟coding plan API Key 
+API_KEY = ""#先空着 去Steamlit后台填
+
+# 养老专属 System Prompt 
+
 ELDERLY_PROMPT = """
-在这里填入你精心设计的养老专属Prompt
+
 """
 
-# 豆包 API 的调用地址（通常不需要改，如果你用的是火山方舟，需确认具体URL）
-# 这里假设使用的是通用的 OpenAI 兼容格式接口，如果是火山原生接口需调整下方请求体
-API_URL = "https://ark.cn-beijing.volces.com/api/v3/chat/completions"  # 示例地址，请以实际为准
 
-# ------------------------------------------------------
-# 【界面设计】适老化配置
-# ------------------------------------------------------
+API_URL = "https://ark.cn-beijing.volces.com/api/v3/chat/completions"  # 
 
-# 设置页面配置
+
+# 页面
 st.set_page_config(page_title="暖阳陪伴", layout="centered")
 
-# 自定义CSS样式：大字体、暖色调
-# 这就是为什么界面看起来适合老人的原因
+# 自定义样式：大字体、暖色调
+# 界面看起来适合老人
 st.markdown("""
     <style>
     .big-title {
@@ -61,13 +49,12 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 显示标题
 st.markdown('<p class="big-title">🌞 暖阳陪伴</p>', unsafe_allow_html=True)
-st.write("---")  # 分割线
+st.write("---")  
 
-# ------------------------------------------------------
-# 【核心逻辑】对话功能
-# ------------------------------------------------------
+
+# 对话功能
+
 
 # 初始化会话状态（让机器人能记住之前的对话）
 if "messages" not in st.session_state:
@@ -91,7 +78,7 @@ def get_response(prompt):
 
     # 构建请求数据
     data = {
-        "model": "ep-2024...",  # ⚠️ 注意：这里需要替换成你在火山方舟创建的模型端点ID (Endpoint ID)
+        "model": "ep-2024...", 
         "messages": st.session_state.messages,
         "temperature": 0.7  # 控制回复的随机性，0.7比较适中
     }
@@ -106,9 +93,7 @@ def get_response(prompt):
         return f"哎呀，网络有点问题，稍后再试吧。(错误: {str(e)})"
 
 
-# ------------------------------------------------------
-# 【交互区域】老人输入的地方
-# ------------------------------------------------------
+# 老人输入的地方
 
 # 底部快捷按钮区域
 st.write("---")
@@ -119,7 +104,7 @@ with col1:
     if st.button("📰 今天天气怎么样？"):
         # 把按钮内容当作用户输入
         st.session_state.messages.append({"role": "user", "content": "今天天气怎么样？"})
-        st.rerun()  # 刷新页面
+        st.rerun()  # 刷新
 
 with col2:
     if st.button("📖 讲个红色故事"):
@@ -138,7 +123,7 @@ with col4:
         st.session_state.messages.append({"role": "user", "content": "现在是早上，请温柔地提醒我该吃药了。"})
         st.rerun()
 
-# 文字输入框
+# 文字输入
 user_input = st.chat_input("想说点什么...")
 
 # 处理用户输入
@@ -157,10 +142,3 @@ if user_input:
     # 3. 把机器人回复存进历史记录
     st.session_state.messages.append({"role": "assistant", "content": full_response})
 
-# ------------------------------------------------------
-# 【部署说明】
-# 1. 去 GitHub 建一个仓库，把 app.py 传上去。
-# 2. 登录 share.streamlit.io，用 GitHub 账号登录。
-# 3. 点击 "New app"，选择你的仓库和文件，点击 Deploy。
-# 4. 在 Settings -> Secrets 里把你的 API_KEY 填进去（更安全），或者直接先填在代码里测试。
-# ------------------------------------------------------
